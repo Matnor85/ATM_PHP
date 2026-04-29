@@ -20,6 +20,8 @@
                 <a href="real-atm-nr1.php" class="atm-hotspot" style="left:30%;top:35%;width:11.5%;height:43%;" title="Bankomat 1"></a>
                 <a href="real-atm.php" class="atm-hotspot" style="left:45.5%;top:38.5%;width:9.3%;height:37.5%;" title="Bankomat 2"></a>
                 <a href="atm-page-digital.php" class="atm-hotspot" style="left:60.4%;top:41.5%;width:6.2%;height:31%;" title="Bankomat 3"></a>
+                <!-- Vidare till Adminpanelen -->
+                <a href="around-the-corner-closed-door.php" class="atm-hotspot" style="left:70%;top:45%;width:18%;height:54%;" title="Runt-hörnet"></a>
             </div>
         </main>
         <script src="../public/assets/js/atm-overview.js"></script>

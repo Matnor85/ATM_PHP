@@ -76,7 +76,7 @@ main {
 .atm-hotspot {
   position: absolute;
   cursor: pointer;
-  /* background: rgba(0, 120, 255, 0.3); */
+  /* background: rgba(255, 251, 0, 0.356); */
 }
 
 .page-overlay {
@@ -287,6 +287,79 @@ main {
 .btn-hotspot:hover {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
+}
+
+/* === Matrix ===*/
+#matrix {
+  position: absolute;
+  left: 13.5%;
+  top: 43.6%;
+  width: 3.9%;
+  height: 6%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* === SERVER-LAMPOR === */
+#server-overlay {
+  position: absolute;
+  left: 13.5%;
+  top: 43.6%;
+  width: 3.9%;
+  height: 6%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+#server-overlay {
+  /* background: rgba(255, 251, 0, 0.356); */
+  position: absolute;
+  /* Koordinater för server-racket i dörröppningen */
+  top: 26.5%;
+  left: 8.8%;
+  width: 4%;
+  height: 30.5%;
+  /* bakgrundsfärg: rgba(0,0,0,0.5); // Avkommentera för att se ytan */
+  pointer-events: none;
+}
+/* Gemensamma stilar för de blinkande LED-lamporna */
+.led {
+  position: absolute;
+  width: 0.8px; /* Mycket små lampor för att passa avståndet i dörren */
+  height: 0.8px;
+  border-radius: 50%;
+  background-color: #fff; /* Grundfärg */
+  opacity: 0; /* Börjar osynliga */
+}
+
+/* Olika färg-varianter med glow-effekt */
+.led.green {
+  background-color: #0f0;
+  box-shadow: 0 0 5px #0f0;
+}
+.led.yellow {
+  background-color: #ff0;
+  box-shadow: 0 0 5px #ff0;
+}
+.led.red {
+  background-color: #f00;
+  box-shadow: 0 0 5px #f00;
+}
+
+/* Animationen för blinket */
+@keyframes blink-led {
+  0% {
+    opacity: 0.1;
+  }
+  5% {
+    opacity: 0.8;
+  } /* Snabbt upp till full ljusstyrka */
+  30% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.1;
+  } /* Långsamt avtagande */
 }
 
 /* === TILLBAKA-KNAPP === */
