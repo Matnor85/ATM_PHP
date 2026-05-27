@@ -114,17 +114,17 @@ echo "Rensade befintlig data.\n\n";
 //  Format: [namn, kortnummer, PIN, roll, färg]
 // =============================================================
 $users = [
-    ['Anna Andersson', '1111111111111111', '1111', 'user',  '🔴 Röd'],
-    ['Björn Björkman',   '2222222222222222', '2222', 'user',  '🟡 Gul'],
-    ['Cecilia Carlsson',  '3333333333333333', '3333', 'user',  '🔵 Blå'],
-    ['David Davidsson',  '4444444444444444', '4444', 'user',  '🟠 Orange'],
-    ['Eva Eriksson',     '5555555555555555', '5555', 'user',  '🟣 Lila'],
-    ['Fredrik Fredriksson','6666666666666666','6666', 'user',  '⚫ Svart'],
-    ['Gunnar Gunnarsson','7777777777777777', '7777', 'user',  '🟤 Brun'],
-    ['Hanna Hansson',    '8888888888888888', '8888', 'user',  '🩷 Rosa'],
-    ['Ivan Ivansson',    '9999999999999999', '9999', 'user',  '🩵 Ljusblå'],
-    ['Jenny Johansson',  '0000000000000000', '0000', 'user',  '🟢 Grön'],
-    ['Admin',  '1234123412341234', '1234', 'admin', '⭐ Admin'],
+    ['Anna Andersson', '1111111111111111', '1111', 'user',  ' Röd'],
+    ['Björn Björkman',   '2222222222222222', '2222', 'user',  ' Gul'],
+    ['Cecilia Carlsson',  '3333333333333333', '3333', 'user',  ' Blå'],
+    ['David Davidsson',  '4444444444444444', '4444', 'user',  ' Orange'],
+    ['Eva Eriksson',     '5555555555555555', '5555', 'user',  ' Lila'],
+    ['Fredrik Fredriksson','6666666666666666','6666', 'user',  ' Svart'],
+    ['Gunnar Gunnarsson','7777777777777777', '7777', 'user',  ' Brun'],
+    ['Hanna Hansson',    '8888888888888888', '8888', 'user',  ' Rosa'],
+    ['Ivan Ivansson',    '9999999999999999', '9999', 'user',  ' Ljusblå'],
+    ['Jenny Johansson',  '0000000000000000', '0000', 'user',  ' Grön'],
+    ['Admin',  '1234123412341234', '1234', 'admin', ' Admin'],
 ];
 
 $userIds = [];
