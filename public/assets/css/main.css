@@ -300,7 +300,7 @@ main {
   z-index: 10;
 }
 
-/* === SERVER-LAMPOR === */
+/* === SERVER-LAMPOR ===
 #server-overlay {
   position: absolute;
   left: 13.5%;
@@ -309,18 +309,19 @@ main {
   height: 6%;
   pointer-events: none;
   z-index: 10;
-}
+} */
 
 #server-overlay {
   /* background: rgba(255, 251, 0, 0.356); */
   position: absolute;
   /* Koordinater för server-racket i dörröppningen */
-  top: 26.5%;
+  top: 30%;
   left: 8.8%;
   width: 4%;
-  height: 30.5%;
+  height: 31.5%;
   /* bakgrundsfärg: rgba(0,0,0,0.5); // Avkommentera för att se ytan */
   pointer-events: none;
+  overflow: hidden;
 }
 /* Gemensamma stilar för de blinkande LED-lamporna */
 .led {

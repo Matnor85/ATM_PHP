@@ -10,6 +10,90 @@ require_once __DIR__ . '/src/Database.php';
 
 $pdo = Database::connect();
 
+$pdo->exec("
+    CREATE TABLE IF NOT EXISTS users (
+        id            INT UNSIGNED    NOT NULL AUTO_INCREMENT,
+        name          VARCHAR(100)    NOT NULL,
+        card_number   CHAR(16)        NOT NULL,
+        pin_hash      VARCHAR(255)    NOT NULL,
+        role          ENUM('user','admin') NOT NULL DEFAULT 'user',
+        created_at    TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        UNIQUE KEY uq_card_number (card_number)
+    ) ENGINE=InnoDB;
+");
+
+$pdo->exec("
+    CREATE TABLE IF NOT EXISTS accounts (
+        id            INT UNSIGNED    NOT NULL AUTO_INCREMENT,
+        user_id       INT UNSIGNED    NOT NULL,
+        account_type  ENUM('checking','savings', 'fixed', 'credit') NOT NULL DEFAULT 'checking',
+        credit_limit  DECIMAL(12,2)   NULL DEFAULT NULL,
+        interest_rate DECIMAL(5,2)    NOT NULL DEFAULT 0.00,
+        locked_until  DATE            NULL DEFAULT NULL,
+        active        TINYINT(1)      NOT NULL DEFAULT 1,
+        numbers_of_trys INT UNSIGNED  NOT NULL DEFAULT 0,
+        balance       DECIMAL(12,2)   NOT NULL DEFAULT 0.00,
+        created_at    TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        CONSTRAINT fk_accounts_user
+            FOREIGN KEY (user_id) REFERENCES users (id)
+            ON DELETE CASCADE
+    ) ENGINE=InnoDB;
+");
+
+$pdo->exec("
+    CREATE TABLE IF NOT EXISTS transactions (
+        id              INT UNSIGNED    NOT NULL AUTO_INCREMENT,
+        type            ENUM('deposit','withdrawal','transfer', 'bill_payment') NOT NULL,
+        amount          DECIMAL(12,2)   NOT NULL CHECK (amount > 0),
+        from_account_id INT UNSIGNED    NULL,
+        to_account_id   INT UNSIGNED    NULL,
+        created_at      TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        CONSTRAINT fk_tx_from
+            FOREIGN KEY (from_account_id) REFERENCES accounts (id)
+            ON DELETE SET NULL,
+        CONSTRAINT fk_tx_to
+            FOREIGN KEY (to_account_id) REFERENCES accounts (id)
+            ON DELETE SET NULL
+    ) ENGINE=InnoDB;
+");
+
+$pdo->exec("
+    CREATE TABLE IF NOT EXISTS bills (
+        id            INT UNSIGNED    NOT NULL AUTO_INCREMENT,
+        account_id    INT UNSIGNED    NOT NULL,
+        description   VARCHAR(255)    NOT NULL,
+        amount        DECIMAL(12,2)   NOT NULL CHECK (amount > 0),
+        due_date      DATE            NOT NULL,
+        paid          TINYINT(1)      NOT NULL DEFAULT 0,
+        paid_at       TIMESTAMP       NULL DEFAULT NULL,
+        created_at    TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        CONSTRAINT fk_bills_account
+            FOREIGN KEY (account_id) REFERENCES accounts (id)
+            ON DELETE RESTRICT
+    ) ENGINE=InnoDB;
+");
+
+$pdo->exec("
+    CREATE TABLE IF NOT EXISTS audit_log (
+        id          INT UNSIGNED    NOT NULL AUTO_INCREMENT,
+        user_id     INT UNSIGNED    NULL,
+        action      VARCHAR(100)    NOT NULL,
+        description TEXT            NULL,
+        ip_address  VARCHAR(45)     NOT NULL,
+        created_at  TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        CONSTRAINT fk_audit_user
+            FOREIGN KEY (user_id) REFERENCES users (id)
+            ON DELETE SET NULL
+    ) ENGINE=InnoDB;
+");
+
+echo "Kontrollerade/Skapade databastabeller.\n\n";
+
 echo "Startar seeding...\n\n";
 
 // =============================================================
@@ -31,7 +115,7 @@ echo "Rensade befintlig data.\n\n";
 // =============================================================
 $users = [
     ['Anna Andersson', '1111111111111111', '1111', 'user',  '🔴 Röd'],
-    ['björn Björkman',   '2222222222222222', '2222', 'user',  '🟡 Gul'],
+    ['Björn Björkman',   '2222222222222222', '2222', 'user',  '🟡 Gul'],
     ['Cecilia Carlsson',  '3333333333333333', '3333', 'user',  '🔵 Blå'],
     ['David Davidsson',  '4444444444444444', '4444', 'user',  '🟠 Orange'],
     ['Eva Eriksson',     '5555555555555555', '5555', 'user',  '🟣 Lila'],
@@ -40,7 +124,7 @@ $users = [
     ['Hanna Hansson',    '8888888888888888', '8888', 'user',  '🩷 Rosa'],
     ['Ivan Ivansson',    '9999999999999999', '9999', 'user',  '🩵 Ljusblå'],
     ['Jenny Johansson',  '0000000000000000', '0000', 'user',  '🟢 Grön'],
-    ['Admin Adminsson',  '1234123412341234', '1234', 'admin', '⭐ Admin'],
+    ['Admin',  '1234123412341234', '1234', 'admin', '⭐ Admin'],
 ];
 
 $userIds = [];

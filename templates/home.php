@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,23 +7,22 @@
         <link rel="preload" as="image" href="../public/assets/img/ATM2.jpg">
         <title>My ATM</title>
     </head>
-   
+
     <body>
-         <!-- Svart overlay för fade-ut -->
-        <div class="page-overlay" id="overlay"></div>
- 
+       
         <main>
+            <div class="page-overlay" id="overlay"></div>
+
             <div class="image-container">
                 <img src="../public/assets/img/Trädpanel.jpg" class="atm-image" id="atm-bg" alt="Bankomater" />
-                
-                <!-- Klickbara områden i procent av bildens storlek -->
-                <a href="real-atm-nr1.php" class="atm-hotspot" style="left:30%;top:35%;width:11.5%;height:43%;" title="Bankomat 1"></a>
-                <a href="real-atm.php" class="atm-hotspot" style="left:45.5%;top:38.5%;width:9.3%;height:37.5%;" title="Bankomat 2"></a>
-                <a href="atm-page-digital.php" class="atm-hotspot" style="left:60.4%;top:41.5%;width:6.2%;height:31%;" title="Bankomat 3"></a>
-                <!-- Vidare till Adminpanelen -->
-                <a href="around-the-corner-closed-door.php" class="atm-hotspot" style="left:70%;top:45%;width:18%;height:54%;" title="Runt-hörnet"></a>
+
+                <a href="index.php?page=real-atm-nr1"                    class="atm-hotspot" style="left:30%;top:35%;width:11.5%;height:43%;" title="Bankomat 1"></a>
+                <a href="index.php?page=real-atm-nr1"                        class="atm-hotspot" style="left:45.5%;top:38.5%;width:9.3%;height:37.5%;" title="Bankomat 2"></a>
+                <a href="index.php?page=real-atm-nr1"                class="atm-hotspot" style="left:60.4%;top:41.5%;width:6.2%;height:31%;" title="Bankomat 3"></a>
+                <a href="index.php?page=around-the-corner-closed-door"   class="atm-hotspot" style="left:70%;top:45%;width:18%;height:54%;" title="Runt-hörnet"></a>
             </div>
+
+            <script src="../public/assets/js/atm-overview-router.js"></script>
         </main>
-        <script src="../public/assets/js/atm-overview.js"></script>
     </body>
 </html>

@@ -1,305 +1,201 @@
 // ============================================
-// REAL-ATM.JS – Logik för bankomatbildsidan
+// REAL-ATM.JS – RENSAD OCH KOPPLAD TILL PHP-ROUTER
 // ============================================
 
-// === TILLSTÅND ===
 let kortInsatt = false;
-let aktivSkärm = "idle";
-let valtBelopp = null;
-let inmatat = "";
 
 // === SKÄRMELEMENT ===
-const screenLeft = document.getElementById("screen-left");
 const screenMid = document.getElementById("screen-mid");
-const screenRight = document.getElementById("screen-right");
 
-// === SKÄRMVYER ===
-const skärmar = {
-  idle: {
-    left: ["", "", "", ""],
-    mid: '<p class="screen-idle">Välkommen</p><p class="screen-subtitle">Sätt in ditt kort</p>',
-    right: ["", "", "", ""],
-  },
-
-  språk: {
-    left: ["Svenska", "English", "Deutsch", "Français"],
-    mid: '<p class="screen-title">Välj språk</p><p class="screen-subtitle">Select language</p>',
-    right: ["", "", "", ""],
-  },
-
-  meny: {
-    left: ["Kontoinformation", "Fler tjänster", "Insättning", "PIN-byte"],
-    mid: '<p class="screen-title">Välj tjänst</p>',
-    right: ["Saldo", "Uttag", "Snabbuttag 500", "Betalning"],
-  },
-
-  avbrutet: {
-    left: ["", "", "", ""],
-    mid: '<p class="screen-avbrutet">Session avbruten</p><p class="screen-subtitle">Ta ditt kort</p>',
-    right: ["", "", "", ""],
-  },
-
-  uttag: {
-    left: ["100 kr", "200 kr", "500 kr", "Annan summa"],
-    mid: '<p class="screen-title">Välj belopp</p>',
-    right: ["", "", "", ""],
-  },
-
-  bekräftelse: {
-    left: ["", "", "", ""],
-    mid: "",
-    right: ["", "", "", ""],
-  },
-
-  utförs: {
-    left: ["", "", "", ""],
-    mid: '<p class="screen-idle">Hämtar pengar...</p>',
-    right: ["", "", "", ""],
-  },
-
-  annansumma: {
-    left: ["", "", "", ""],
-    mid: '<p class="screen-title">Ange belopp</p><p class="screen-subtitle">Rätta = ta bort siffra</p><p class="screen-saldo" id="belopp-display">0 kr</p>',
-    right: ["", "", "", ""],
-  },
-
-  saldo: {
-    left: ["", "", "", ""],
-    mid: '<p class="screen-title">Ditt saldo är:</p><p class="screen-saldo">12 450 kr</p>',
-    right: ["", "", "", ""],
-  },
-};
-
-// === VISA SKÄRM ===
-function visaSkärm(namn) {
-  aktivSkärm = namn;
-  const s = skärmar[namn];
-  if (!s) return;
-
-  screenLeft.innerHTML = s.left
-    .map(
-      (text, i) =>
-        `<div class="screen-option ${text ? "arrow-left" : ""}" data-idx="${i}">${text}</div>`,
-    )
-    .join("");
-
-  screenMid.innerHTML = s.mid;
-
-  screenRight.innerHTML = s.right
-    .map(
-      (text, i) =>
-        `<div class="screen-option ${text ? "arrow-right" : ""}" data-idx="${i}">${text}</div>`,
-    )
-    .join("");
+// === HJÄLPFUNKTION: VISA GRUNDSKÄRMAR ===
+function visaStatiskSkärm(htmlInnehåll) {
+  if (screenMid) {
+    screenMid.innerHTML = htmlInnehåll;
+  }
 }
 
-// === TA UT KORT ===
+// === TA UT KORT / NOLLSTÄLL ===
 function taUtKort() {
   kortInsatt = false;
-  valtBelopp = null;
-  inmatat = "";
   const card = document.getElementById("card");
 
-  visaSkärm("avbrutet");
-  card.classList.remove("insatt");
-  card.classList.add("uttag");
+  visaStatiskSkärm(
+    '<p class="screen-avbrutet" style="color: #ff6666; font-family: monospace; text-align: center; font-weight: bold;">Session avbruten</p><p class="screen-subtitle" style="color: white; font-family: monospace; text-align: center; opacity: 0.8; font-size: 0.8rem;">Ta ditt kort</p>',
+  );
+
+  if (card) {
+    card.classList.remove("insatt");
+    card.classList.add("uttag");
+    setTimeout(() => {
+      card.classList.remove("uttag");
+    }, 1000);
+  }
 
   setTimeout(() => {
-    card.classList.remove("uttag");
-    setTimeout(() => visaSkärm("idle"), 1500);
-  }, 1000);
+    visaStatiskSkärm(
+      '<p class="screen-idle" style="color: white; font-family: monospace; text-align: center; padding-top: 40px; margin: 0;">Välkommen<br><span style="font-size: 0.8rem; opacity: 0.7;">Sätt in ditt kort</span></p>',
+    );
+  }, 2000);
 }
 
-// === KORTLÄSARE – sätt in ELLER ryck ut ===
-document.getElementById("btn-kort").addEventListener("click", () => {
-  if (!kortInsatt) {
-    kortInsatt = true;
-    document.getElementById("card").classList.add("insatt");
-    setTimeout(() => visaSkärm("språk"), 900);
-  } else {
+// === KORTLÄSARE (KLICK PÅ ATT SÄTTA IN KORT) ===
+let valtKortnummer = "";
+
+document.addEventListener("DOMContentLoaded", () => {
+  initieraKortKlick();
+});
+
+// === DE FYSISKA SIFFERKNAPPARNA (0-9 och 00) ===
+const sifferKnappar = document.querySelectorAll(".grp-num");
+if (sifferKnappar && sifferKnappar.length > 0) {
+  sifferKnappar.forEach((knapp) => {
+    knapp.addEventListener("click", () => {
+      if (!kortInsatt) return;
+
+      const pinInput = document.getElementById("pin");
+
+      if (pinInput) {
+        const siffra = knapp.getAttribute("title");
+
+        if (siffra && (!isNaN(siffra) || siffra === "00")) {
+          const maxLängd = parseInt(pinInput.getAttribute("maxlength")) || 4;
+
+          if (pinInput.value.length < maxLängd) {
+            pinInput.value += siffra;
+            if (pinInput.value.length > maxLängd) {
+              pinInput.value = pinInput.value.slice(0, maxLängd);
+            }
+          }
+        }
+      }
+    });
+  });
+}
+
+// === GUL RÄTTA-KNAPP (BACKSPACE) ===
+const btnRatta = document.getElementById("btn-ratta");
+if (btnRatta) {
+  btnRatta.addEventListener("click", () => {
+    if (!kortInsatt) return;
+    const pinInput = document.getElementById("pin");
+    if (pinInput && pinInput.value.length > 0) {
+      pinInput.value = pinInput.value.slice(0, -1);
+    }
+  });
+}
+
+// === GRÖN OK-KNAPP (SKICKAR FORMULÄRET) ===
+const btnOk = document.getElementById("btn-ok");
+if (btnOk) {
+  btnOk.addEventListener("click", () => {
+    if (!kortInsatt) return;
+    const form = document.getElementById("atm-login-form");
+    if (form) {
+      form.submit(); // <-- Detta skickar formuläret direkt till index.php!
+    }
+  });
+}
+
+// === RÖD AVBRYT-KNAPP ===
+const btnAvbryt = document.getElementById("btn-avbryt");
+if (btnAvbryt) {
+  btnAvbryt.addEventListener("click", () => {
     taUtKort();
+  });
+}
+
+// Körs direkt när sidan laddas
+document.addEventListener("DOMContentLoaded", () => {
+  // Om felmeddelande finns i URL:en vill vi behålla kortet insatt och visa felet
+  const urlParams = new URLSearchParams(window.location.search);
+  const errorMsg = urlParams.get("error");
+
+  if (errorMsg) {
+    kortInsatt = true; // Sätt tillståndet så knapparna fungerar
+
+    // Hämta token om den finns i din DOM
+    const carrier = document.getElementById("php-csrf-carrier");
+    const actualToken = carrier ? carrier.getAttribute("data-token") : "";
+
+    // Ritar ut formuläret igen med det röda felmeddelandet
+    visaStatiskSkärm(`
+            <form id="atm-login-form" action="index.php?action=atm_login_process" method="POST" style="display: flex; flex-direction: column; align-items: center; gap: 5px; color: white; font-family: monospace;">
+                <input type="hidden" name="csrf_token" value="${actualToken}">
+                
+                <p style="margin: 0; color: #ff3333; font-weight: bold; font-size: 0.9rem; text-align: center;">${errorMsg}</p>
+                
+                <input type="hidden" id="card_number" name="card_number" value=""> 
+                <p style="margin: 10px 0 0 0; font-size: 0.8rem;">Välj ditt kort igen och försök igen.</p>
+            </form>
+        `);
+    // Nollställ kortet så man måste klicka igen efter ett fel
+    setTimeout(() => taUtKort(), 3000);
+  } else if (!kortInsatt) {
+    visaStatiskSkärm(
+      '<p class="screen-idle" style="color: white; font-family: monospace; text-align: center; padding-top: 40px; margin: 0;">Välkommen<br><span style="font-size: 0.8rem; opacity: 0.7;">Sätt in ditt kort</span></p>',
+    );
   }
 });
 
-// === SIDOKNAPPAR ===
-const sidoMappning = {
-  "btn-v1": { side: "v", idx: 0 },
-  "btn-v2": { side: "v", idx: 1 },
-  "btn-v3": { side: "v", idx: 2 },
-  "btn-v4": { side: "v", idx: 3 },
-  "btn-h1": { side: "h", idx: 0 },
-  "btn-h2": { side: "h", idx: 1 },
-  "btn-h3": { side: "h", idx: 2 },
-  "btn-h4": { side: "h", idx: 3 },
+// === FRISTÅENDE FUNKTION FÖR ATT BLÄDDRA KORT ===
+window.bladdraKort = function (targetPage, e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const panel = document.querySelector(".external-card-panel");
+  if (!panel) return;
+
+  fetch(`index.php?page=atm_cards_api&card_page=${targetPage}&t=${Date.now()}`)
+    .then((response) => response.text())
+    .then((html) => {
+      panel.innerHTML = `<h3>Välj ett bankkort:</h3>` + html;
+      initieraKortKlick();
+    })
+    .catch((err) => console.error("Fel vid laddning av kortsida:", err));
 };
 
-Object.entries(sidoMappning).forEach(([btnId, { side, idx }]) => {
-  const btn = document.getElementById(btnId);
-  if (!btn) return;
-  btn.addEventListener("click", () => {
-    if (!kortInsatt) return;
+// === INITIERA KLICK PÅ KORT ===
+function initieraKortKlick() {
+  const bankKort = document.querySelectorAll(".bank-card");
+  bankKort.forEach((kort) => {
+    kort.onclick = function (e) {
+      if (kortInsatt) return;
 
-    const container = side === "v" ? screenLeft : screenRight;
-    const options = container.querySelectorAll(".screen-option");
-    const valt = options[idx];
-    const text = valt ? valt.textContent.trim() : "";
+      kortInsatt = true;
+      valtKortnummer = e.currentTarget.getAttribute("data-cardnumber");
 
-    if (!text) return;
-    hanteraVal(aktivSkärm, side, idx, text);
-  });
-});
-
-// === VALHANTERING ===
-function hanteraVal(skärm, side, idx, text) {
-  switch (skärm) {
-    case "språk":
-      visaSkärm("meny");
-      break;
-
-    case "meny":
-      switch (text) {
-        case "Uttag":
-          visaSkärm("uttag");
-          break;
-        case "Saldo":
-          visaSkärm("saldo");
-          break;
-        case "Snabbuttag 500":
-          visaSkärm("utförs");
-          setTimeout(() => visaSkärm("meny"), 2500);
-          break;
-        case "Betalning":
-        case "Kontoinformation":
-        case "Fler tjänster":
-        case "Insättning":
-        case "PIN-byte":
-          alert(text + " saknas i denna demo.");
-          break;
+      const cardAnimationElement = document.getElementById("card");
+      if (cardAnimationElement) {
+        cardAnimationElement.style.background =
+          e.currentTarget.style.background;
+        cardAnimationElement.classList.add("insatt");
       }
-      break;
 
-    case "uttag":
-      if (text === "Annan summa") {
-        inmatat = "";
-        visaSkärm("annansumma");
-      } else {
-        visaSkärm("utförs");
-        setTimeout(() => visaSkärm("meny"), 2500);
-      }
-      break;
-  }
-}
+      visaStatiskSkärm(
+        '<p class="screen-idle" style="color: #00d4ff; font-family: monospace; text-align: center;">Läser kort...</p>',
+      );
 
-// function hanteraVal(skärm, side, idx, text) {
-//   if (skärm === "språk") {
-//     visaSkärm("meny");
-//   } else if (skärm === "meny") {
-//     if (text === "Uttag") visaSkärm("uttag");
-//     else if (text === "Saldo") visaSkärm("saldo");
-//     else if (text === "Snabbuttag 500") visaBekräftelse("500");
-//   } else if (skärm === "uttag") {
-//     if (text === "Annan summa") {
-//       inmatat = "";
-//       visaSkärm("annansumma");
-//     } else {
-//       const belopp = text.replace(" kr", "");
-//       // Direkt till utförs – ingen bekräftelse
-//       visaSkärm("utförs");
-//       setTimeout(() => visaSkärm("meny"), 2500);
-//     }
-//   }
-// }
+      // Efter 900ms laddar vi PIN-skärmen (Nu pekar formuläret på rätt action!)
+      setTimeout(() => {
+        const carrier = document.getElementById("php-csrf-carrier");
+        const actualToken = carrier ? carrier.getAttribute("data-token") : "";
 
-// === VISA BEKRÄFTELSE ===
-function visaBekräftelse(belopp) {
-  valtBelopp = belopp;
-  skärmar["bekräftelse"].mid = `<p class="screen-title">Bekräfta uttag</p>
-     <p class="screen-saldo">${belopp} kr</p>
-     <p class="screen-subtitle">OK = bekräfta</p>
-     <p class="screen-subtitle">Avbryt = ångra</p>`;
-  visaSkärm("bekräftelse");
-}
+        visaStatiskSkärm(`
+                    <form id="atm-login-form" action="index.php?action=atm_login_process" method="POST" style="display: flex; flex-direction: column; align-items: center; gap: 5px; color: white; font-family: monospace;">
+                        <input type="hidden" name="csrf_token" value="${actualToken}">
+                        
+                        <input type="hidden" id="card_number" name="card_number" value="${valtKortnummer}">
+                        
+                        <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #00d4ff;">Kort identifierat</p>
+                        <label style="font-size: 0.8rem; margin-top: 10px;">Ange din PIN-kod:</label>
+                        <input type="password" id="pin" name="pin" maxlength="4" style="background: rgba(0,0,0,0.5); border: 1px solid #00d4ff; color: #fff; text-align: center; width: 80px; font-size: 1.2rem; letter-spacing: 3px;" readonly>
+                    </form>
+                `);
 
-// === OK-KNAPP ===
-document.getElementById("btn-ok").addEventListener("click", () => {
-  if (!kortInsatt) return;
-
-  if (aktivSkärm === "bekräftelse") {
-    visaSkärm("utförs");
-    setTimeout(() => visaSkärm("meny"), 2500);
-    valtBelopp = null;
-  } else if (aktivSkärm === "saldo") {
-    visaSkärm("meny");
-  } else if (aktivSkärm === "annansumma") {
-    if (inmatat && inmatat !== "0" && parseInt(inmatat) > 0) {
-      visaBekräftelse(inmatat);
-    }
-  }
-});
-
-// === AVBRYT-KNAPP ===
-document.getElementById("btn-avbryt").addEventListener("click", () => {
-  if (!kortInsatt) return;
-
-  if (aktivSkärm === "bekräftelse") {
-    valtBelopp = null;
-    visaSkärm("uttag");
-  } else if (
-    aktivSkärm === "uttag" ||
-    aktivSkärm === "saldo" ||
-    aktivSkärm === "annansumma"
-  ) {
-    inmatat = "";
-    visaSkärm("meny");
-  } else {
-    taUtKort();
-  }
-});
-
-// === RÄTTA-KNAPP ===
-document.getElementById("btn-ratta").addEventListener("click", () => {
-  if (!kortInsatt) return;
-  if (aktivSkärm !== "annansumma") return;
-
-  inmatat = inmatat.slice(0, -1);
-
-  const display = document.getElementById("belopp-display");
-  if (display) display.textContent = (inmatat || "0") + " kr";
-});
-
-// === SIFFERKNAPPAR ===
-[
-  "n1",
-  "n2",
-  "n3",
-  "n4",
-  "n5",
-  "n6",
-  "n7",
-  "n8",
-  "n9",
-  "n0",
-  "n00",
-  "nstar",
-].forEach((id) => {
-  const btn = document.getElementById("btn-" + id);
-  if (!btn) return;
-  btn.addEventListener("click", () => {
-    if (!kortInsatt) return;
-    if (aktivSkärm !== "annansumma") return;
-
-    const siffra = btn.title;
-    if (siffra === "*") return;
-
-    // Max 6 siffror
-    if (inmatat.length >= 6) return;
-
-    inmatat += siffra;
-
-    const display = document.getElementById("belopp-display");
-    if (display) display.textContent = inmatat + " kr";
+        const pinInput = document.getElementById("pin");
+        if (pinInput) pinInput.focus();
+      }, 900);
+    };
   });
-});
-
-// === STARTA ===
-visaSkärm("idle");
+}

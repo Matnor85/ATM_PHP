@@ -1,0 +1,252 @@
+/* =========================================================================
+   ATM.CSS – Isolerad stil för bankomatens virtuella skärm och dess vyer
+   ========================================================================= */
+
+/* === SKÄRMENS GRUNDLAYOUT === */
+
+/* Huvudcontainer för den inbäddade inloggningen i #screen-mid */
+.atm-embedded-login {
+  color: #ffffff;
+  font-family: "Share Tech Mono", monospace, Courier, monospace;
+  text-align: center;
+  padding: 8px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Rubriker på bankomatskärmen */
+.atm-login-header h2 {
+  font-size: 1.15rem;
+  margin: 0;
+  color: #00d4ff;
+  letter-spacing: 1px;
+  text-shadow: 0 0 4px rgba(0, 212, 255, 0.4);
+}
+
+.atm-login-header p {
+  font-size: 0.75rem;
+  margin: 2px 0 0 0;
+  opacity: 0.8;
+}
+
+/* Felmeddelanden på skärmen */
+.atm-error-msg {
+  color: #ff5555;
+  background: rgba(255, 85, 85, 0.15);
+  border: 1px solid rgba(255, 85, 85, 0.3);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  padding: 3px;
+  margin: 2px 0;
+  font-weight: bold;
+}
+
+/* Formulärlayout inuti skärmen */
+.atm-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.atm-form-group {
+  width: 90%;
+  text-align: left;
+}
+
+.atm-form-group label {
+  font-size: 0.7rem;
+  display: block;
+  margin-bottom: 2px;
+  opacity: 0.9;
+  letter-spacing: 0.5px;
+}
+
+/* Inputfälten anpassade för sifferknapparna */
+.atm-form-group input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid #00b8d4;
+  border-radius: 4px;
+  color: #ffffff;
+  padding: 5px;
+  font-size: 0.9rem;
+  text-align: center;
+  outline: none;
+  box-sizing: border-box;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+/* Ge det aktiva fältet (där man skriver just nu) en glödande ram */
+.atm-form-group input:focus {
+  border-color: #00d4ff;
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+}
+
+/* Instruktioner längst ner på skärmen */
+.atm-login-footer {
+  font-size: 0.7rem;
+  opacity: 0.6;
+  margin-top: 4px;
+}
+
+/* =========================================================================
+   NY LAYOUT & STRUKTUR – Bankomat-positionering och extern kortpanel
+   ========================================================================= */
+
+/* Huvudlayouten som håller både bankomaten och kortpanelen centrerat på skärmen */
+.atm-layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 60px; /* Mer mellanrum för en kolumn-layout */
+  height: 100vh;
+  width: 100%;
+}
+
+/* Bankomatens bildbehållare */
+.real-atm-image {
+  position: relative;
+  height: 100vh;
+  display: block;
+}
+
+/* Själva bankomat-bakgrundsbilden */
+.real-atm-img {
+  height: 100vh;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* Skärmens exakta fysiska placering över hålet i bildfilen */
+.virtual-screen {
+  position: absolute;
+  left: 19.5%;
+  top: 39.01%;
+  width: 39.5%;
+  height: 23.79%;
+  background: linear-gradient(160deg, #0d3b6e 0%, #1a5fa0 40%, #0a7abf 100%);
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  border-radius: 2px;
+  z-index: 5;
+}
+
+/* === EXTERNA KORTPANELEN (Ute på träväggen) === */
+
+/* Panelen som grupperar dina färgade bankkort */
+.external-card-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 30px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px); /* Ger en snygg frostad glaseffekt på träet */
+}
+
+.external-card-panel h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* Sätt in .atm-card-selector till en kolumn */
+.atm-card-selector {
+  display: flex;
+  flex-direction: column; /* Tvingar korten till en kolumn */
+  gap: 15px;
+  align-items: center;
+}
+
+/* De klickbara fysiska korten – Nu med en och samma snygga "bank"-stil */
+.bank-card {
+  position: relative;
+  width: 140px; /* Något större för att rymma text */
+  height: 85px;
+  border-radius: 8px;
+  cursor: pointer;
+
+  /* Gemensam stil: Svart/Mörkgrått kort med gulddetaljer */
+  background: linear-gradient(135deg, #2a2a2a 0%, #000000 100%);
+  border: 1px solid rgba(255, 215, 0, 0.1); /* Diskret guldram */
+  color: white;
+
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+
+  /* För intern placering av text */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Namnet hamnar längst ner */
+  padding: 8px;
+  box-sizing: border-box;
+  font-family:
+    "Credit Card", monospace, sans-serif; /* Låna en typsnittsstil för kort ifall möjligt */
+  user-select: none;
+}
+
+/* Hover-effekt – Kortet lyfter och får en gyllene glöd */
+.bank-card:hover {
+  transform: scale(1.05) translateY(-3px);
+  box-shadow: 0 8px 20px rgba(255, 215, 0, 0.2);
+  border-color: rgba(255, 215, 0, 0.5);
+}
+
+/* Snygg logga och chip på kortet */
+.card-logo {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: rgba(255, 215, 0, 0.8);
+  font-family: Arial, sans-serif;
+}
+
+.card-chip {
+  position: absolute;
+  top: 15px;
+  left: 10px;
+  width: 18px;
+  height: 14px;
+  background: linear-gradient(135deg, #ffd700, #ffaa00);
+  border-radius: 2px;
+}
+
+/* Textstilar på kortet */
+.card-number-text {
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  color: #fff;
+  margin-bottom: 5px;
+}
+
+.card-holder-text {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.pag-btn:hover:not(.disabled) {
+  background: rgba(255, 215, 0, 0.2) !important;
+  border-color: #ffd700 !important;
+  color: #fff !important;
+}

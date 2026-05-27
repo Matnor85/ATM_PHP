@@ -1,203 +1,73 @@
-CREATE TABLE users (
-id INT AUTO_INCREMENT PRIMARY KEY,
-name VARCHAR(100) NOT NULL,
-card_number VARCHAR(16) UNIQUE NOT NULL,
-pin_hash VARCHAR(255) NOT NULL,
-role ENUM('user', 'admin') DEFAULT 'user',
-created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+--- Detta projekt är en webbaserad bankomatapplikation byggd i ren PHP (utan ramverk) med MVC-liknande struktur (Repositories & Services). ---
+=== Bankomat & Admin-System ===
 
-CREATE TABLE accounts (
-id INT AUTO_INCREMENT PRIMARY KEY,
-user_id INT NOT NULL,
-account_type ENUM('checking', 'savings') NOT NULL,
-balance DECIMAL(10,2) DEFAULT 0.00,
-created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+=== installationsguide ===
+Krav: PHP 8.0+
 
-CREATE TABLE transactions (
-id INT AUTO_INCREMENT PRIMARY KEY,
-type ENUM('deposit', 'withdrawal', 'transfer', 'payment') NOT NULL,
-amount DECIMAL(10,2) NOT NULL,
-description VARCHAR(255),
-from_account_id INT,
-to_account_id INT,
-created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-FOREIGN KEY (from_account_id) REFERENCES accounts(id),
-FOREIGN KEY (to_account_id) REFERENCES accounts(id)
-);
+Installation & Databas
 
-CREATE TABLE bills (
-id INT AUTO_INCREMENT PRIMARY KEY,
-account_id INT NOT NULL,
-payee VARCHAR(100) NOT NULL,
-amount DECIMAL(10,2) NOT NULL,
-due_date DATE NOT NULL,
-paid BOOLEAN DEFAULT FALSE,
-created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-FOREIGN KEY (account_id) REFERENCES accounts(id)
-);
+Öppna en terminal i rotmappen.
 
-CREATE TABLE audit_log (
-id INT AUTO_INCREMENT PRIMARY KEY,
-user_id INT,
-action VARCHAR(100) NOT NULL,
-details TEXT,
-ip_address VARCHAR(45),
-created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
-);
+Kör kommandot php seed.php
 
-users, accounts, transactions, bills, audit_log
+Klart! Databasen, tabellerna och testanvändarna är nu installerade.
 
-ATM /
-├── public/                                 -- Webbserverns rot — enda mappen som är publik
-│ ├── assets/                               -- CSS, JS, bilder — statiska filer
-│ │ ├── css/
-│ │ │ |── style.css
-| | | └── main.css
-| | |
-│ │ ├── js/
-│ │ │ |── atm-overview.js
-| | | └── real-atm.js
-| | |
-│ │ └── img/
-| |
-│ └── index.php                             -- Tar emot alla requests, skickar vidare till Router               # Router
-|
-├── src/                                    -- All PHP-logik — aldrig direkt åtkomlig från webben
-| ├── Interface/                            -- Kontrakt — tvingar klasser att ha rätt metoder
-| │ ├── RepositoryInterface.php
-| │ └── ServiceInterface.php
-| |
-| ├── Repository/ # Bara SQL                -- Bara SQL med PDO — inga affärsregler här
-│ | ├── UserRepository.php
-| | ├── AccountRepository.php
-| | ├── TransactionRepository.php
-| | ├── BillRepository.php
-| | └── AuditRepository.php
-| |  
-│ ├── Service /                             -- Affärslogik — saldokontroll, validering, regler
-| | ├── UserService.php
-| | ├── AccountService.php
-| | ├── TransferService.php
-| | ├── BillService.php
-| | └── AuditService.php
-| |
-│ ├── Model /                               -- Dataobjekt — User, Account, Transaction, Bill, AuditLog
-│ | ├── User.php
-│ | ├── Account.php
-│ | ├── Transaction.php
-| | ├── Bill.php
-| | └── AuditLog.php
-| |
-| ├── Middleware/                           -- Auth + rollkontroll — körs innan varje route
-| │ ├── AuthMiddleware.php                  # requireAuth()
-| │ └── RoleMiddleware.php                  # require_role()
-| |  
-| ├── Security/                             -- CSRF-token — skyddar formulär mot angrepp
-| │ └── CsrfToken.php                       # csrf_token()
-| |
-| |── View/                                 -- Escape.php — htmlspecialchars() mot XSS
-| | └── Escape.php                          # escape()
-| |
-| ├── Router.php                            -- Matchar URL → rätt Service/template
-| ├── Container.php                         -- Bygger upp alla objekt och kopplar ihop dem
-| └── Database.php                          -- PDO-uppkoppling — ersätter gamla db.php
-|
-├── templates/                              -- HTML-vyer — tar emot färdiga Model-objekt
-│ ├── layout.php                            # gemensam header/footer
-│ ├── login.php
-│ ├── dashboard.php                         # saldo + snabblänkar
-│ ├── withdraw.php
-│ ├── deposit.php
-│ ├── transfer.php
-│ ├── bills.php
-│ ├── history.php                           # transaktionshistorik med paginering
-│ ├── change_pin.php
-│ └── admin/                                -- Skyddade vyer — kräver admin-roll
-│     ├── dashboard.php                     # statistik
-│     ├── users.php                         # lista + CRUD
-│     ├── accounts.php
-│     ├── transactions.php                  # filtrering + paginering + CSV-export
-│     └── audit_log.php
-|
-├── schema.sql                              -- Databasstruktur — users, accounts, transactions, bills
-├── seed.php                                -- Skapar testanvändare med hashade PIN-koder
-|── README.md
-├── .env                                    -- Hemliga uppgifter — checkas INTE in i git
-├── .env.example                            -- 
-└── .gitignore                              -- Blockerar .env från att hamna på GitHub
+Starta:
 
+Kör php -S localhost:8000 -t public/ och öppna webbläsaren på http://localhost:8000.
 
-Router → Service → Repository → Model
-↓
-Template (tar emot färdiga Model-objekt)
+Sedan:
 
-Flöde: en request genom systemet
-index.php  ----> Router      ----> Middleware  ----> Service     ----> Repository ----> Template                                                                     
-request in       matchar URL       auth + roll       affärslogik       SQL + PDO        HTML ut                                                                                                                                
- 
+1. Klicka dig till server rummer
+2. Tryck på kortläsaren brvid dörren så kommer du in till serverrummer.
+3. Första gången man är här så trycker på servern racket där finns ett script som lägger upp databas och en admin.
+4. Sedan klicka på datorn så kommer du in till en login skärm
+5. Admin-kort ID = 1231231231231231231231
+   Autentiseringskod (PIN) = 1234
+6. Gå till settings
+7. Har trycker du på "Create Database" och sedan "Seed Data"
 
- === kod exempel ===
+=== Admin Panelel ===
+Kortnummer: 1234123412341234, pin: 1234 (Admin)
+=== Bankomat Användare ===
+Kortnummer: 1111111111111111, PIN: 1111 (Anna Andersson)
 
-// EF i C# skulle se ut så här:
-var user = context.Users.Find(1);
+Kortnummer: 2222222222222222, PIN: 2222 (Björn Björkman)
 
-// Din PHP med Repository ser nästan likadant ut:
-$user = $userRepository->findById(1);
-// Returnerar ett User-objekt, precis som EF
+Rollkontroll & Säkerhet
 
+Systemet använder en role-kolumn i users-tabellen ('user' eller 'admin').
 
-(kortnummer) # Färgkodning — helt vettigt som ett UX-lager i prototypmiljön ovanpå riktiga kontodata. Ingen funktionell logik i det, bara visuell hjälp för dig under utveckling.
+Server-side kontroll: Alla admin-sidor skyddas av funktionen require_role('admin') i index.php. Om en som inte är admin försöker nå en admin-URL omdirigeras de eller får ett 403-fel.
 
-Stoppa in kort                                
-    ↓                                                 
-Ange Språk                                  
-    ↓                                       
-Ange PIN                                    
-    ↓                                               
-Huvudmeny                                          
-    ├── Saldo                                      
-    │     ├── Lönekonto                                                     
-    │     ├── Sparkonto                                           
-    │     └── Om fler sparkonton                                          
-    |                                                 
-    ├── Uttag                                (bara från lönekonto)
-    |   ├── Uttag 100                        (Sker direkt)
-    │   ├── Uttag 200                        (Sker direkt)
-    │   ├── Uttag 500                        (Sker direkt)
-    │   └── Annan summa                                                   
-    |                                           
-    ├── Snabbuttag 500                       (bara från lönekonto)
-    │   └── Uttag 500                        (Sker direkt)
-    |                                                                   
-    ├── Insättning                           (välj konto)
-    |   └── Summa                                            
-    |       └── Konto                                             
-    |           |── Lönekonto                                      
-    |           |── Sparkonto                                     
-    |           └── Om fler sparkonton                                  
-    |                                               
-    └── Fler Tjänster                                 
-        |──Kontouppgifter                              
-        |  └── (Visa namn + kontonummer + konto saldo)                                         
-        |                                                                                   
-        |── Överföring                         (mellan egna konton) Från (****)konto till (****)konto ----> Summa                                    
-        |   ├── Lönekonto                    
-        |   ├── Sparkonto                 
-        |   └── Om fler sparkonton                                                                                                                                                                   
-        |                                                                                       
-        ├── Betalning                                                        
-        |   └── Fakturor                       (val av faktura) Från (****)konto summa = faktura summan             
-        |       └── Konto val                                 
-        |                                                                                  
-        └── PIN-byte                                  
-            └── (PIN kods byte)                
-      
-      
-        
-      
-      
- 
+Sessionssäkerhet: Alla sessions-cookies har httponly och Strict samesite-policy för att förhindra XSS- och CSRF-attacker.
+
+Hashning: Alla PIN-koder hashas med bcrypt (password_hash).
+
+Admin-panelens funktionalitet
+
+Admin-panelen ger full kontroll över systemet:
+
+Användarhantering (CRUD): Skapa, redigera och radera användare (t.ex. namn, roll).
+
+Kontolista: Översikt av alla användares konton och deras aktuella saldo.
+
+Transaktionslogg: Sökbara listor med filtrering på typ (insättning/uttag) och datumintervall.
+
+Audit Logg: Säkerhetslogg som spårar händelser med IP-adress och tidstämpel för full spårbarhet.
+
+Paginering: Listor delas upp för att få en snygg ux.
+
+Bankomatflöden (Användare)
+
+Inloggning: Sker med kort(kortnummer) och PIN.
+
+Saldo: Visar realtidssaldo per konto.
+
+Uttag/Insättning: Utförs med server-side validering (saldokontroll).
+
+Överföring: Möjlighet att flytta pengar mellan egna konton.
+
+Transaktionshistorik: Visar användarens tidigare bankhändelser.
+
+Och dokumentationen hjälper andra utvecklare att förstå flödena och säkerhetsmodellerna snabbt utan att behöva sitta i veckor för att förstå sig på systemet/koden beroende på storlek.

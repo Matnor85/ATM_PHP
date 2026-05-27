@@ -1,28 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="../public/assets/css/main.css">
-        <title>My ATM</title>
+        <link rel="stylesheet" href="assets/css/main.css">
+        <title>My ATM – Stängd dörr</title>
     </head>
-   
-    <body>
-         <!-- Svart overlay för fade-ut -->
-        <!-- <div class="page-overlay" id="overlay"></div> -->
  
+    <body>
         <main>
             <div class="image-container">
-                <img src="../public/assets/img/around-corner-door-closed.png" class="atm-image" id="atm-bg" alt="Bankomater" />
-                
-                <!-- Klickbara områden i procent av bildens storlek -->
-                <!-- <a href="real-atm-nr1.php" class="atm-hotspot" style="left:30%;top:35%;width:11.5%;height:43%;" title="Bankomat 1"></a>
-                <a href="real-atm.php" class="atm-hotspot" style="left:45.5%;top:38.5%;width:9.3%;height:37.5%;" title="Bankomat 2"></a>
-                <a href="atm-page-digital.php" class="atm-hotspot" style="left:60.4%;top:41.5%;width:6.2%;height:31%;" title="Bankomat 3"></a> -->
-            
-                <a href="around-the-corner-open-door.php" class="atm-hotspot" style="left:5.3%;top:42.2%;width:2%;height:6%;" title="Runt-hörnet"></a> 
+                <img
+                    src="assets/img/around-corner-door-closed.png"
+                    class="atm-image"
+                    id="atm-bg"
+                    alt="Bankomat med stängd dörr"
+                />
+ 
+                <a
+                    href="index.php?page=around-the-corner-open-door"
+                    class="atm-hotspot"
+                    style="left:5.3%;top:42.2%;width:2%;height:6%;"
+                    title="Öppna dörren"
+                ></a>
+                <a href="index.php?page=home" 
+                   class="back-button" 
+                   title="Tillbaka till huvudsidan">
+                   Tillbaka
+                </a>
+
+                <a
+                    
+                    href="index.php?page=home"
+                    class="Back-button atm-hotspot"
+                    style="left:0%;top:85%;width:100%;height:15%;"
+                    title="Tillbaka till huvudsidan"
+                ></a>
             </div>
         </main>
-        <!-- <script src="../public/assets/js/atm-overview.js"></script> -->
     </body>
 </html>

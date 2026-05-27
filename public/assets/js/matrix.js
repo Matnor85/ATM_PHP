@@ -31,7 +31,7 @@ function draw() {
   }
 }
 
-setInterval(draw, 33); // Ca 30 frames per sekund
+setInterval(draw, 63); // Ca 30 frames per sekund hade 33 från star.
 
 // --------------------------------------------------
 // 2. GENERERA BLINKANDE SERVER-LAMPOR
@@ -40,8 +40,8 @@ setInterval(draw, 33); // Ca 30 frames per sekund
 const serverOverlay = document.getElementById("server-overlay");
 const colors = ["green", "yellow", "red"];
 
-// Antal lampor vi vill skapa över det avlägsna racket
-const totalLights = 60;
+// Antal lampor vi vill skapa över det avlägsna racket "60"
+const totalLights = 100;
 
 for (let i = 0; i < totalLights; i++) {
   // Skapa en LED-div
@@ -50,9 +50,11 @@ for (let i = 0; i < totalLights; i++) {
   // Välj en slumpmässig färg (men övervägande grön/gul)
   const colorRand = Math.random();
   let colorClass;
-  if (colorRand > 0.9) colorClass = "red";
-  else if (colorRand > 0.5) colorClass = "yellow";
-  else colorClass = "green";
+  if (colorRand > 0.9)
+    colorClass = "red"; // 10% röd
+  else if (colorRand > 0.5)
+    colorClass = "yellow"; // 40% gul
+  else colorClass = "green"; // 50% grön
 
   led.className = `led ${colorClass}`;
 
@@ -62,7 +64,7 @@ for (let i = 0; i < totalLights; i++) {
   const topPercent = Math.floor(i / 3) * 6 + Math.random() * 2 + 2;
   led.style.top = `${topPercent}%`;
 
-  // Horisontell position (sprid ut inom racket)
+  // Horisontell position (sprid ut inom racket) 80 + 10
   const leftPercent = Math.random() * 80 + 10;
   led.style.left = `${leftPercent}%`;
 
@@ -71,7 +73,7 @@ for (let i = 0; i < totalLights; i++) {
   const duration = Math.random() * 0.6 + 0.2 + "s";
 
   // Slumpmässig fördröjning innan det startar (0.0s - 3.0s)
-  const delay = Math.random() * 15.0 + "s";
+  const delay = Math.random() * 1.0 + "s";
 
   // Applicera animationen
   led.style.animation = `blink-led ${duration} infinite ${delay}`;
