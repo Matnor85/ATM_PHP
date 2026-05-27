@@ -60,21 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         exit;
 
-        case 'install_database':
-                try {
-                    $sql = file_get_contents(__DIR__ . '/../database/bankomat.sql');
-
-                    $db->exec($sql);
-
-                    echo "<script>
-                            alert('SERVER HACKAD: Databasen har återställts och admin-användare är skapad!');
-                            window.location.href = 'index.php?page=admin_login';
-                          </script>";
-                    exit;
-                } catch (Exception $e) {
-                    die("Misslyckades att installera databasen: " . $e->getMessage());
-                    }
-
         case 'atm_login_process':
 
             $user = $userRepo->findByCardNumber($_POST['card_number'] ?? '');
