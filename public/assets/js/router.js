@@ -1,6 +1,3 @@
-/**
- * router.js – Layering-router v3 (Säkrad för publika mappar)
- */
 const router = (() => {
   const cache = {};
   const layers = {};
@@ -13,15 +10,12 @@ const router = (() => {
     fetch(url)
       .then((response) => response.text())
       .then((html) => {
-        // Vi sätter HTML-koden DIREKT i den virtuella skärmens mittendel!
         document.getElementById("screen-mid").innerHTML = html;
       });
   }
-  // En hjälpfunktion för att garantera att vi ALLTID anropar vår publika index.php
   function getCleanUrl(url) {
     let pageParam = "home";
 
-    // Ta bort eventuella inledande snedstreck för att läsa strängen rent
     let cleanStr = url.startsWith("/") ? url.substring(1) : url;
 
     if (cleanStr.includes("page=")) {
@@ -30,15 +24,11 @@ const router = (() => {
       );
       pageParam = params.get("page");
     } else if (cleanStr !== "" && !cleanStr.startsWith("index.php")) {
-      // Om man bara skickat "admin_login" istället för "index.php?page=admin_login"
       pageParam = cleanStr;
     }
 
-    // Returnera den absoluta säkra sökvägen till din PHP-router
     return "/ATM/public/index.php?page=" + pageParam;
   }
-
-  // ─── Fetch ───────────────────────────────────────────────────────────────
 
   async function fetchPage(url) {
     const safeUrl = getCleanUrl(url);
@@ -55,8 +45,6 @@ const router = (() => {
     cache[safeUrl] = main ? main.innerHTML : doc.body.innerHTML;
     return cache[safeUrl];
   }
-
-  // ─── Lager ───────────────────────────────────────────────────────────────
 
   function ensureLayer(url) {
     const safeUrl = getCleanUrl(url);
@@ -81,10 +69,8 @@ const router = (() => {
       layers[safeUrl].classList.add("active");
       current = safeUrl;
 
-      // Tvinga re-evaluering av just CSRF-skriptet om det finns i lagret
       const cachedScript = layers[safeUrl].querySelector("script");
       if (cachedScript) {
-        // Ta bort blockeringen så att skriptet körs på nytt och uppdaterar din window.csrfToken
         delete cachedScript.dataset.ran;
       }
 
@@ -94,8 +80,6 @@ const router = (() => {
     const backBtn = document.getElementById("back-btn");
     if (backBtn) backBtn.hidden = hist.length <= 1;
   }
-
-  // ─── Skript ──────────────────────────────────────────────────────────────
 
   function runScripts(container) {
     container.querySelectorAll("script").forEach((old) => {
@@ -108,8 +92,6 @@ const router = (() => {
       s.dataset.ran = "1";
     });
   }
-
-  // ─── Länkkapning ─────────────────────────────────────────────────────────
 
   function hijackLinks(container) {
     container.querySelectorAll("a[href]").forEach((a) => {
@@ -147,10 +129,6 @@ const router = (() => {
     }, 1850);
   }
 
-  // ─── Publikt API ─────────────────────────────────────────────────────────
-
-  // ─── Publikt API ─────────────────────────────────────────────────────────
-
   return {
     async init(startUrl) {
       window.addEventListener("popstate", (e) => {
@@ -177,9 +155,7 @@ const router = (() => {
       activate(safeUrl);
     },
 
-    // NY FUNKTION HÄR: Denna gör att funktionen högre upp i filen går att använda i din real-atm.js!
     loadAtmPage(page) {
-      // Vi använder routerns egna getCleanUrl för att garantera rätt mapp i Laragon!
       const safeUrl = getCleanUrl("atm_" + page);
 
       fetch(safeUrl)

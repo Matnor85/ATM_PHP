@@ -1,20 +1,13 @@
-// ============================================
-// REAL-ATM.JS – RENSAD OCH KOPPLAD TILL PHP-ROUTER
-// ============================================
-
 let kortInsatt = false;
 
-// === SKÄRMELEMENT ===
 const screenMid = document.getElementById("screen-mid");
 
-// === HJÄLPFUNKTION: VISA GRUNDSKÄRMAR ===
 function visaStatiskSkärm(htmlInnehåll) {
   if (screenMid) {
     screenMid.innerHTML = htmlInnehåll;
   }
 }
 
-// === TA UT KORT / NOLLSTÄLL ===
 function taUtKort() {
   kortInsatt = false;
   const card = document.getElementById("card");
@@ -38,14 +31,12 @@ function taUtKort() {
   }, 2000);
 }
 
-// === KORTLÄSARE (KLICK PÅ ATT SÄTTA IN KORT) ===
 let valtKortnummer = "";
 
 document.addEventListener("DOMContentLoaded", () => {
   initieraKortKlick();
 });
 
-// === DE FYSISKA SIFFERKNAPPARNA (0-9 och 00) ===
 const sifferKnappar = document.querySelectorAll(".grp-num");
 if (sifferKnappar && sifferKnappar.length > 0) {
   sifferKnappar.forEach((knapp) => {

@@ -6,12 +6,10 @@ const ConvexMirror = (function () {
   const ctx = canvas.getContext("2d");
   const idleEl = document.getElementById("mirrorIdle");
 
-  // Hämta startvärde från PHP eller använd default
   let strength = window.MIRROR_CONFIG?.strength ?? 0.65;
 
   let lutX, lutY;
 
-  // ── Bygg lookup-tabell för fisheye-distorsion ──
   function buildLUT() {
     lutX = new Float32Array(W * H);
     lutY = new Float32Array(W * H);
@@ -49,7 +47,6 @@ const ConvexMirror = (function () {
     }
   }
 
-  // ── Applicera fisheye via LUT + bilinär interpolering ──
   function applyFisheye(srcData) {
     const sd = srcData.data;
     const dst = ctx.createImageData(W, H);
@@ -85,7 +82,6 @@ const ConvexMirror = (function () {
     ctx.putImageData(dst, 0, 0);
   }
 
-  // ── Renderingsloop ──
   const tmp = document.createElement("canvas");
   tmp.width = W;
   tmp.height = H;
@@ -98,7 +94,6 @@ const ConvexMirror = (function () {
     requestAnimationFrame(drawLoop);
   }
 
-  // ── Starta kamera ──
   function init() {
     buildLUT();
 
@@ -107,7 +102,6 @@ const ConvexMirror = (function () {
     video.playsInline = true;
     video.muted = true;
 
-    // Försök bakre kamera (mer verklighetstrogen för ATM), annars valfri
     navigator.mediaDevices
       .getUserMedia({
         video: { facingMode: "environment", width: W, height: H },
@@ -123,11 +117,9 @@ const ConvexMirror = (function () {
       })
       .catch((err) => {
         console.warn("Kamera ej tillgänglig:", err.message);
-        // idle-bakgrunden stannar kvar som fallback
       });
   }
 
-  // ── Publikt API (för admin-sida) ──
   return {
     init,
 
@@ -147,5 +139,4 @@ const ConvexMirror = (function () {
   };
 })();
 
-// Starta spegeln när DOM:en är klar
 document.addEventListener("DOMContentLoaded", () => ConvexMirror.init());
